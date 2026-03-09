@@ -118,12 +118,25 @@ export function useBluetoothScanner(options: BluetoothScannerOptions) {
       });
 
       scanRef.current = scan;
-      console.log('[BLE] Scan started successfully, scan object:', scan);
+      console.log('[BLE] Scan started successfully');
+      console.log('[BLE] Scan object:', scan);
+      console.log('[BLE] Scan active:', scan.active);
+      
+      // Check if events are being dispatched
+      console.log('[BLE] navigator.bluetooth:', navigator.bluetooth);
+      console.log('[BLE] Testing if bluetooth object can receive events...');
 
       const handleAdvertisement = (event: Event) => {
         console.log('[BLE] Advertisement received:', event);
         const bleEvent = event as BluetoothAdvertisementEvent;
         const { device, rssi, txPower } = bleEvent;
+
+        console.log('[BLE] Device detected:', {
+          id: device.id,
+          name: device.name,
+          rssi,
+          txPower,
+        });
 
         const deviceId = device.id;
         const deviceName = device.name || null;
@@ -190,6 +203,19 @@ export function useBluetoothScanner(options: BluetoothScannerOptions) {
         'advertisementreceived',
         handleAdvertisement as EventListener
       );
+
+      console.log('[BLE] Event listener registered');
+      console.log('[BLE] Bluetooth listeners count:', 
+        (navigator.bluetooth as any).listenerCount?.('advertisementreceived') || 'unknown');
+      
+      // Try to trigger a test to see if events work
+      setTimeout(() => {
+        console.log('[BLE] 5 seconds elapsed. If you see no devices:');
+        console.log('  1. Check Chrome DevTools > More Tools > Bluetooth Internals');
+        console.log('  2. Ensure devices are within 10m range');
+        console.log('  3. Try turning Bluetooth OFF then ON on your phone');
+        console.log('  4. Devices found so far:', devicesMapRef.current.size);
+      }, 5000);
 
       const pruneInterval = setInterval(() => {
         const now = Date.now();

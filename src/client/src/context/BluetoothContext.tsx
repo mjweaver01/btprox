@@ -62,16 +62,15 @@ const BluetoothContext = createContext<BluetoothContextValue | null>(null);
 
 export function BluetoothProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<BluetoothStatus>(defaultStatus);
-  const [scannerEnabled, setScannerEnabledState] = useState(
-    getStoredScannerEnabled
-  );
+  // Don't persist scanner state - can't auto-resume without user gesture
+  const [scannerEnabled, setScannerEnabledState] = useState(false);
   const [config, setConfig] = useState<AppConfig>(() => ({
     ...DEFAULT_CONFIG,
   }));
 
   const setScannerEnabled = useCallback((v: boolean) => {
     setScannerEnabledState(v);
-    setStoredScannerEnabled(v);
+    // Don't persist to sessionStorage
   }, []);
 
   const handleDeviceDiscovered = useCallback(

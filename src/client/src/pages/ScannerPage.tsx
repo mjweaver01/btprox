@@ -5,15 +5,6 @@ export function ScannerPage() {
   const { scannerEnabled, setScannerEnabled, devices, isScanning, error, supported, startScanning } =
     useBluetooth();
 
-  // Debug logging
-  console.log('[ScannerPage] State:', {
-    supported,
-    scannerEnabled,
-    isScanning,
-    deviceCount: devices.length,
-    error,
-  });
-
   const sortedDevices = [...devices].sort((a, b) => {
     if (a.isTracked && !b.isTracked) return -1;
     if (!a.isTracked && b.isTracked) return 1;
@@ -69,17 +60,13 @@ export function ScannerPage() {
 
   return (
     <div className="space-y-6">
-      {!scannerEnabled && (
+      {!isScanning && !error && (
         <div className="text-center">
           <button
             onClick={async () => {
-              console.log('[ScannerPage] Start Scanning button clicked');
               setScannerEnabled(true);
-              // Start scanning immediately on click to preserve user gesture
               try {
-                console.log('[ScannerPage] Calling startScanning()');
                 await startScanning();
-                console.log('[ScannerPage] startScanning() completed');
               } catch (err) {
                 console.error('[ScannerPage] startScanning() error:', err);
               }
