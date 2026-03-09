@@ -55,6 +55,7 @@ interface BluetoothContextValue {
   config: AppConfig;
   setConfig: (c: AppConfig) => void;
   handleSaveConfig: (updates: Partial<AppConfig>) => Promise<void>;
+  startScanning: () => Promise<void>;
 }
 
 const BluetoothContext = createContext<BluetoothContextValue | null>(null);
@@ -109,7 +110,7 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const { devices, isScanning, error, supported } = useBluetoothScanner({
+  const { devices, isScanning, error, supported, startScanning } = useBluetoothScanner({
     enabled: scannerEnabled,
     txPowerCalibration: config.txPowerCalibration,
     pathLossExponent: config.pathLossExponent,
@@ -167,6 +168,7 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
     config,
     setConfig,
     handleSaveConfig,
+    startScanning,
   };
 
   return (

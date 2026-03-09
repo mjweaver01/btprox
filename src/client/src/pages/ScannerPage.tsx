@@ -2,8 +2,17 @@ import { useBluetooth } from '../context/BluetoothContext';
 import { DeviceCard } from '../components/DeviceCard';
 
 export function ScannerPage() {
-  const { scannerEnabled, setScannerEnabled, devices, isScanning, error, supported } =
+  const { scannerEnabled, setScannerEnabled, devices, isScanning, error, supported, startScanning } =
     useBluetooth();
+
+  // Debug logging
+  console.log('[ScannerPage] State:', {
+    supported,
+    scannerEnabled,
+    isScanning,
+    deviceCount: devices.length,
+    error,
+  });
 
   const sortedDevices = [...devices].sort((a, b) => {
     if (a.isTracked && !b.isTracked) return -1;
@@ -16,12 +25,43 @@ export function ScannerPage() {
       <div className="space-y-6">
         <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-center">
           <h2 className="mb-2 text-lg font-semibold text-red-400">
-            Bluetooth Not Supported
+            Bluetooth Scanning API Not Available
           </h2>
-          <p className="text-sm text-zinc-400">
-            Your browser does not support Web Bluetooth API. Please use Chrome or
-            Edge.
+          <p className="text-sm text-zinc-400 mb-4">
+            The experimental Bluetooth Scanning API is required for btprox to work.
           </p>
+          <div className="space-y-3 text-left max-w-md mx-auto">
+            <div className="rounded-lg bg-zinc-900/50 p-4">
+              <p className="text-sm font-semibold text-zinc-300 mb-2">
+                Step 1: Enable the Flag
+              </p>
+              <p className="text-xs text-zinc-500 mb-2">
+                Open a new tab and go to:
+              </p>
+              <code className="block rounded bg-zinc-800 px-2 py-1 text-xs text-blue-400">
+                chrome://flags/#enable-experimental-web-platform-features
+              </code>
+              <p className="text-xs text-zinc-500 mt-2">
+                Set it to <strong className="text-zinc-300">Enabled</strong>
+              </p>
+            </div>
+            <div className="rounded-lg bg-zinc-900/50 p-4">
+              <p className="text-sm font-semibold text-zinc-300 mb-2">
+                Step 2: Restart Chrome
+              </p>
+              <p className="text-xs text-zinc-500">
+                Completely quit and reopen Chrome (not just refresh this page)
+              </p>
+            </div>
+            <div className="rounded-lg bg-zinc-900/50 p-4">
+              <p className="text-sm font-semibold text-zinc-300 mb-2">
+                Step 3: Refresh This Page
+              </p>
+              <p className="text-xs text-zinc-500">
+                After restarting Chrome, reload btprox
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -32,7 +72,18 @@ export function ScannerPage() {
       {!scannerEnabled && (
         <div className="text-center">
           <button
-            onClick={() => setScannerEnabled(true)}
+            onClick={async () => {
+              console.log('[ScannerPage] Start Scanning button clicked');
+              setScannerEnabled(true);
+              // Start scanning immediately on click to preserve user gesture
+              try {
+                console.log('[ScannerPage] Calling startScanning()');
+                await startScanning();
+                console.log('[ScannerPage] startScanning() completed');
+              } catch (err) {
+                console.error('[ScannerPage] startScanning() error:', err);
+              }
+            }}
             className="rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
           >
             Start Scanning

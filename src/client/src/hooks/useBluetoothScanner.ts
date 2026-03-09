@@ -82,7 +82,11 @@ export function useBluetoothScanner(options: BluetoothScannerOptions) {
   } = options;
 
   useEffect(() => {
-    setSupported(!!navigator.bluetooth);
+    const hasRequestLEScan = !!(
+      navigator.bluetooth &&
+      typeof (navigator.bluetooth as any).requestLEScan === 'function'
+    );
+    setSupported(hasRequestLEScan);
   }, []);
 
   const startScanning = useCallback(async () => {
@@ -91,8 +95,22 @@ export function useBluetoothScanner(options: BluetoothScannerOptions) {
       return;
     }
 
+    // Check if requestLEScan is available
+    if (typeof navigator.bluetooth.requestLEScan !== 'function') {
+      setError(
+        'Bluetooth Scanning API not available. Please enable chrome://flags/#enable-experimental-web-platform-features and restart Chrome completely.'
+      );
+      return;
+    }
+
+    // Must be called within a user gesture
     try {
       setError(null);
+      setIsScanning(true);
+      console.log('[BLE] Requesting LE Scan, supported check:', {
+        hasNavigatorBluetooth: !!navigator.bluetooth,
+        hasRequestLEScan: typeof navigator.bluetooth?.requestLEScan === 'function',
+      });
       logger('[BLE] Requesting LE Scan...');
 
       const scan = await navigator.bluetooth.requestLEScan({
@@ -100,9 +118,10 @@ export function useBluetoothScanner(options: BluetoothScannerOptions) {
       });
 
       scanRef.current = scan;
-      setIsScanning(true);
+      console.log('[BLE] Scan started successfully, scan object:', scan);
 
       const handleAdvertisement = (event: Event) => {
+        console.log('[BLE] Advertisement received:', event);
         const bleEvent = event as BluetoothAdvertisementEvent;
         const { device, rssi, txPower } = bleEvent;
 
@@ -202,7 +221,7 @@ export function useBluetoothScanner(options: BluetoothScannerOptions) {
         err instanceof Error ? err.message : 'Failed to start BLE scanning';
       setError(message);
       setIsScanning(false);
-      logger('[BLE] Error:', message);
+      logger('[BLE] Error:', message, err);
     }
   }, [
     txPowerCalibration,
@@ -229,12 +248,11 @@ export function useBluetoothScanner(options: BluetoothScannerOptions) {
   }, []);
 
   useEffect(() => {
-    if (enabled && !isScanning) {
-      void startScanning();
-    } else if (!enabled && isScanning) {
+    // Don't auto-start scanning - must be triggered by user gesture
+    if (!enabled && isScanning) {
       stopScanning();
     }
-  }, [enabled, isScanning, startScanning, stopScanning]);
+  }, [enabled, isScanning, stopScanning]);
 
   return {
     devices: Array.from(devices.values()),
