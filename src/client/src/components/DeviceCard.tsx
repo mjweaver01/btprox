@@ -31,13 +31,13 @@ export function DeviceCard({ device }: DeviceCardProps) {
   };
 
   const getProximityColor = () => {
-    if (device.proximity === 'near') return 'text-emerald-400 bg-emerald-500/10';
+    if (device.proximity === 'near') return 'text-blue-400 bg-blue-500/10';
     if (device.proximity === 'far') return 'text-red-400 bg-red-500/10';
     return 'text-zinc-400 bg-zinc-500/10';
   };
 
   const getBorderColor = () => {
-    if (device.proximity === 'near') return 'border-emerald-500/30';
+    if (device.proximity === 'near') return 'border-blue-500/30';
     if (device.proximity === 'far') return 'border-red-500/30';
     return 'border-zinc-700/50';
   };
@@ -57,7 +57,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
   return (
     <button
       onClick={toggleTracking}
-      className={`w-full rounded-lg border ${getBorderColor()} bg-zinc-900/50 p-4 text-left transition-all hover:bg-zinc-900/80 hover:border-emerald-500/50`}
+      className={`w-full rounded-lg border ${getBorderColor()} bg-zinc-900/50 p-4 text-left transition-all hover:bg-zinc-900/80 hover:border-blue-500/50`}
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1 min-w-0">
@@ -67,7 +67,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
           <p className="text-sm text-zinc-500 truncate">{device.deviceType}</p>
         </div>
         {device.isTracked && (
-          <div className="flex-shrink-0 rounded-full bg-emerald-500/20 px-2 py-0.5 text-xs font-medium text-emerald-400">
+          <div className="flex-shrink-0 rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400">
             Tracked
           </div>
         )}

@@ -33,7 +33,7 @@ export function ScannerPage() {
         <div className="text-center">
           <button
             onClick={() => setScannerEnabled(true)}
-            className="rounded-lg bg-emerald-600 px-8 py-3 font-semibold text-white transition-colors hover:bg-emerald-700"
+            className="rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
           >
             Start Scanning
           </button>
@@ -77,7 +77,7 @@ export function ScannerPage() {
 
           {devices.length === 0 ? (
             <div className="rounded-lg border border-zinc-700/50 bg-zinc-900/50 p-12 text-center">
-              <div className="mx-auto mb-4 h-16 w-16 animate-pulse rounded-full bg-emerald-500/20" />
+              <div className="mx-auto mb-4 h-16 w-16 animate-pulse rounded-full bg-blue-500/20" />
               <p className="text-zinc-400">Scanning for BLE devices...</p>
               <p className="mt-2 text-sm text-zinc-600">
                 Make sure Bluetooth devices are nearby and advertising

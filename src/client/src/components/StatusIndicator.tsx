@@ -18,7 +18,7 @@ export function StatusIndicator({
             : error
               ? 'bg-red-500'
               : connected
-                ? 'bg-emerald-500'
+                ? 'bg-blue-500'
                 : 'bg-zinc-500'
         }`}
         title={connected ? 'Live' : 'Off'}

@@ -76,7 +76,7 @@ export function DevicesPage() {
               }
               className={`rounded-lg border p-4 text-left transition-all ${
                 selectedDevice === device.id
-                  ? 'border-emerald-500 bg-emerald-500/10'
+                  ? 'border-blue-500 bg-blue-500/10'
                   : 'border-zinc-700 bg-zinc-900/50 hover:border-zinc-600'
               }`}
             >
@@ -121,7 +121,7 @@ export function DevicesPage() {
                     <span
                       className={`rounded px-2 py-0.5 text-xs font-medium ${
                         sighting.proximity === 'near'
-                          ? 'bg-emerald-500/20 text-emerald-400'
+                          ? 'bg-blue-500/20 text-blue-400'
                           : sighting.proximity === 'far'
                             ? 'bg-red-500/20 text-red-400'
                             : 'bg-zinc-500/20 text-zinc-400'

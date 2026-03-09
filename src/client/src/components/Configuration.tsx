@@ -113,7 +113,7 @@ export function Configuration({ config, onSave, embedded }: ConfigurationProps) 
             step={0.1}
             value={nearThresholdMeters}
             onChange={e => setNearThresholdMeters(Number(e.target.value))}
-            className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
           <p className="mt-1 text-xs text-zinc-500">
             Devices within this distance are considered "near"
@@ -135,7 +135,7 @@ export function Configuration({ config, onSave, embedded }: ConfigurationProps) 
             step={0.5}
             value={farThresholdMeters}
             onChange={e => setFarThresholdMeters(Number(e.target.value))}
-            className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
           <p className="mt-1 text-xs text-zinc-500">
             Devices beyond this distance are considered "far"
@@ -162,7 +162,7 @@ export function Configuration({ config, onSave, embedded }: ConfigurationProps) 
                 step={1}
                 value={txPowerCalibration}
                 onChange={e => setTxPowerCalibration(Number(e.target.value))}
-                className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               <p className="mt-1 text-xs text-zinc-500">
                 Expected RSSI at 1 meter (default: -59)
@@ -184,7 +184,7 @@ export function Configuration({ config, onSave, embedded }: ConfigurationProps) 
                 step={0.1}
                 value={pathLossExponent}
                 onChange={e => setPathLossExponent(Number(e.target.value))}
-                className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               <p className="mt-1 text-xs text-zinc-500">
                 Environment factor: 2.0 (free space), 2.7-4.3 (indoor)
@@ -204,7 +204,7 @@ export function Configuration({ config, onSave, embedded }: ConfigurationProps) 
             </span>
             <span
               className={`flex h-5 w-9 shrink-0 items-center rounded-full px-0.5 transition-colors ${
-                notificationsEnabled ? 'bg-emerald-600' : 'bg-zinc-600'
+                notificationsEnabled ? 'bg-blue-600' : 'bg-zinc-600'
               }`}
             >
               <span
@@ -227,7 +227,7 @@ export function Configuration({ config, onSave, embedded }: ConfigurationProps) 
                   type="checkbox"
                   checked={notifyOnNear}
                   onChange={e => setNotifyOnNear(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-600 bg-zinc-700 text-emerald-600 focus:ring-emerald-500"
+                  className="h-4 w-4 rounded border-zinc-600 bg-zinc-700 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-zinc-300">Notify when near</span>
               </label>
@@ -236,7 +236,7 @@ export function Configuration({ config, onSave, embedded }: ConfigurationProps) 
                   type="checkbox"
                   checked={notifyOnFar}
                   onChange={e => setNotifyOnFar(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-600 bg-zinc-700 text-emerald-600 focus:ring-emerald-500"
+                  className="h-4 w-4 rounded border-zinc-600 bg-zinc-700 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-zinc-300">Notify when far</span>
               </label>
@@ -247,7 +247,7 @@ export function Configuration({ config, onSave, embedded }: ConfigurationProps) 
         <button
           type="submit"
           disabled={saving}
-          className="w-full rounded-md bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+          className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-500 disabled:opacity-50"
         >
           {saving ? 'Saving...' : 'Save'}
         </button>

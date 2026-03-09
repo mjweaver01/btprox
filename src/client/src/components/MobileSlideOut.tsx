@@ -55,7 +55,7 @@ export function MobileSlideOut({ isOpen, onClose }: MobileSlideOutProps) {
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-colors touch-manipulation ${
                   isActive
-                    ? 'bg-emerald-600/20 text-emerald-400'
+                    ? 'bg-blue-600/20 text-blue-400'
                     : 'text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 active:bg-zinc-700'
                 }`
               }
@@ -81,7 +81,7 @@ export function MobileSlideOut({ isOpen, onClose }: MobileSlideOutProps) {
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-colors touch-manipulation ${
                   isActive
-                    ? 'bg-emerald-600/20 text-emerald-400'
+                    ? 'bg-blue-600/20 text-blue-400'
                     : 'text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 active:bg-zinc-700'
                 }`
               }

@@ -11,7 +11,7 @@ export function SignalStrengthBar({ rssi, className = '' }: SignalStrengthBarPro
   const percentage = Math.round(normalized * 100);
 
   const getColor = () => {
-    if (normalized >= 0.7) return 'bg-emerald-500';
+    if (normalized >= 0.7) return 'bg-blue-500';
     if (normalized >= 0.4) return 'bg-yellow-500';
     return 'bg-red-500';
   };
