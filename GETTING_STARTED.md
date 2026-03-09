@@ -40,7 +40,7 @@ This creates `certs/cert.pem` and `certs/key.pem`.
 bun run dev
 ```
 
-The server will start at: **https://localhost:3000**
+The server will start at: **https://localhost:4222**
 
 ⚠️ **Important**: Use HTTPS, not HTTP! Your browser will show a certificate warning (because it's self-signed). Click "Advanced" → "Proceed to localhost" to continue.
 

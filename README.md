@@ -40,7 +40,7 @@ Run the Bun server (serves API and client with hot reload):
 bun run dev
 ```
 
-- **Server**: https://localhost:3000 (HTTPS required for Web Bluetooth)
+- **Server**: https://localhost:4222 (HTTPS required for Web Bluetooth)
 
 ## Production
 
@@ -50,7 +50,7 @@ Build and start the server:
 bun run start
 ```
 
-The server runs on port 3000 with automatic TLS if certificates are present.
+The server runs on port 4222 with automatic TLS if certificates are present.
 
 ## Configuration
 

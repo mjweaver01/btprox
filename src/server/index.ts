@@ -12,7 +12,7 @@ const keyPath = join(import.meta.dir, '..', '..', 'certs', 'key.pem');
 const useTls = existsSync(certPath) && existsSync(keyPath);
 
 const server = Bun.serve({
-  port: 3000,
+  port: 4222,
   development: process.env.NODE_ENV !== 'production',
   ...(useTls && {
     tls: {
