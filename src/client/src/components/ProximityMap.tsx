@@ -201,7 +201,7 @@ export function ProximityMap({ devices, onDeviceClick }: ProximityMapProps) {
   const zoneSize = Math.max(8, 10 * invZoom);
 
   return (
-    <div className="relative w-full aspect-square mx-auto">
+    <div className="relative w-full aspect-square max-h-[calc(100vh-14rem)] mx-auto [&>svg]:max-h-full">
       <svg
         ref={svgRef}
         viewBox={`${vbX} ${vbY} ${vbSize} ${vbSize}`}
