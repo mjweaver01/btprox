@@ -7,4 +7,4 @@ config.json
 *.log
 .DS_Store
 /client
-/devices
+*.sqlite
