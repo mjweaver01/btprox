@@ -11,11 +11,25 @@ export function estimateDistance(
 export function classifyProximity(
   distance: number,
   nearThreshold: number,
-  farThreshold: number
+  farThreshold: number,
+  previousProximity?: 'near' | 'far' | 'unknown',
+  hysteresisMargin: number = 0.5
 ): 'near' | 'far' | 'unknown' {
   if (distance < 0) return 'unknown';
-  if (distance <= nearThreshold) return 'near';
-  if (distance >= farThreshold) return 'far';
+
+  // Hysteresis: require crossing threshold + margin to change state
+  if (previousProximity === 'near') {
+    if (distance <= nearThreshold + hysteresisMargin) return 'near';
+  } else {
+    if (distance <= nearThreshold) return 'near';
+  }
+
+  if (previousProximity === 'far') {
+    if (distance >= farThreshold - hysteresisMargin) return 'far';
+  } else {
+    if (distance >= farThreshold) return 'far';
+  }
+
   return 'unknown';
 }
 

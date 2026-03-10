@@ -14,6 +14,7 @@ export interface BtDevice {
   id: string;
   name: string | null;
   rssi: number;
+  smoothedRssi: number;
   txPower: number | null;
   estimatedDistance: number;
   deviceType: string;

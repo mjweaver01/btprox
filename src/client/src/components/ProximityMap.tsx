@@ -378,6 +378,10 @@ export function ProximityMap({ devices, onDeviceClick }: ProximityMapProps) {
               key={device.id}
               data-device={device.id}
               className="cursor-pointer"
+              style={{
+                transform: `translate(${dx}px, ${dy}px)`,
+                transition: 'transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)',
+              }}
               onMouseEnter={() => setHoveredId(device.id)}
               onMouseLeave={() => setHoveredId(null)}
               onClick={() => onDeviceClick?.(device)}
@@ -385,8 +389,8 @@ export function ProximityMap({ devices, onDeviceClick }: ProximityMapProps) {
               {/* Glow */}
               {(isHovered || device.isTracked) && (
                 <circle
-                  cx={dx}
-                  cy={dy}
+                  cx={0}
+                  cy={0}
                   r={nodeR + 6 * invZoom}
                   fill={colors.glow}
                 />
@@ -394,8 +398,8 @@ export function ProximityMap({ devices, onDeviceClick }: ProximityMapProps) {
 
               {/* Node */}
               <circle
-                cx={dx}
-                cy={dy}
+                cx={0}
+                cy={0}
                 r={nodeR}
                 fill={colors.fill}
                 stroke={isHovered ? '#fff' : colors.stroke}
@@ -407,8 +411,8 @@ export function ProximityMap({ devices, onDeviceClick }: ProximityMapProps) {
                 (() => {
                   const labelW = (truncatedName.length * 6.5 + 12) * invZoom;
                   const labelH = 18 * invZoom;
-                  const labelX = dx - labelW / 2;
-                  const labelY = dy - nodeR - labelH - 4 * invZoom;
+                  const labelX = -labelW / 2;
+                  const labelY = -nodeR - labelH - 4 * invZoom;
                   return (
                     <g>
                       <rect
@@ -422,7 +426,7 @@ export function ProximityMap({ devices, onDeviceClick }: ProximityMapProps) {
                         strokeWidth={0.5 * invZoom}
                       />
                       <text
-                        x={dx}
+                        x={0}
                         y={labelY + labelH / 2}
                         textAnchor="middle"
                         dominantBaseline="central"
@@ -440,8 +444,8 @@ export function ProximityMap({ devices, onDeviceClick }: ProximityMapProps) {
               {(isHovered || device.isTracked) &&
                 device.estimatedDistance > 0 && (
                   <text
-                    x={dx}
-                    y={dy + nodeR + 14 * invZoom}
+                    x={0}
+                    y={nodeR + 14 * invZoom}
                     textAnchor="middle"
                     fill="rgb(161, 161, 170)"
                     fontSize={9 * invZoom}

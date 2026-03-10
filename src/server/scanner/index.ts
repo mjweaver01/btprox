@@ -1,6 +1,8 @@
 import type { BtDevice } from '@shared/types';
 import { DEVICE_STALE_TIMEOUT } from '@shared/constants';
 import { estimateDistance, classifyProximity } from '@shared/lib/rssi';
+import { pushRssi, computeSmoothedRssi } from '@shared/lib/rssiFilter';
+import { HYSTERESIS_MARGIN } from '@shared/constants';
 import { identifyDeviceType } from '@shared/lib/deviceTypes';
 import { getConfig } from '../config';
 import { upsertDevice, saveSighting } from '../devices';
@@ -10,6 +12,10 @@ interface RawDevice {
   id: string;
   name: string | null;
   rssi: number;
+  smoothedRssi: number;
+  rssiHistory: number[];
+  emaValue: number | null;
+  lastProximity: 'near' | 'far' | 'unknown';
   txPower: number | null;
   manufacturerData: Record<string, string>;
   serviceUUIDs: string[];
@@ -46,10 +52,21 @@ function handleDiscover(peripheral: any): void {
   const manufacturerData = parseManufacturerData(advertisement.manufacturerData);
   const serviceUUIDs: string[] = (advertisement.serviceUuids || []).map((s: string) => s.toLowerCase());
 
+  const existing = rawDevices.get(id);
+  const rssiHistory = pushRssi(existing?.rssiHistory ?? [], rssi);
+  const { smoothedRssi, emaValue } = computeSmoothedRssi(
+    rssiHistory,
+    existing?.emaValue ?? null
+  );
+
   const raw: RawDevice = {
     id,
     name,
     rssi,
+    smoothedRssi,
+    rssiHistory,
+    emaValue,
+    lastProximity: existing?.lastProximity ?? 'unknown',
     txPower,
     manufacturerData,
     serviceUUIDs,
@@ -149,8 +166,9 @@ export function getDiscoveredDevices(browserId: string | null): BtDevice[] {
 
   for (const raw of rawDevices.values()) {
     const effectiveTxPower = (raw.txPower != null && raw.txPower < 0) ? raw.txPower : config.txPowerCalibration;
-    const distance = estimateDistance(raw.rssi, effectiveTxPower, config.pathLossExponent);
-    const proximity = classifyProximity(distance, config.nearThresholdMeters, config.farThresholdMeters);
+    const distance = estimateDistance(raw.smoothedRssi, effectiveTxPower, config.pathLossExponent);
+    const proximity = classifyProximity(distance, config.nearThresholdMeters, config.farThresholdMeters, raw.lastProximity, HYSTERESIS_MARGIN);
+    raw.lastProximity = proximity;
     const deviceType = identifyDeviceType(raw.serviceUUIDs, raw.manufacturerData, raw.name);
     const isTracked = config.trackedDeviceIds.includes(raw.id);
 
@@ -158,6 +176,7 @@ export function getDiscoveredDevices(browserId: string | null): BtDevice[] {
       id: raw.id,
       name: raw.name,
       rssi: raw.rssi,
+      smoothedRssi: raw.smoothedRssi,
       txPower: raw.txPower,
       estimatedDistance: distance,
       deviceType,

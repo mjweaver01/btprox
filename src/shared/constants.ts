@@ -25,3 +25,8 @@ export const MAX_RSSI = -30;
 
 // Device pruning timeout (milliseconds)
 export const DEVICE_STALE_TIMEOUT = 30000;
+
+// RSSI smoothing
+export const RSSI_WINDOW_SIZE = 7;
+export const EMA_ALPHA = 0.3;
+export const HYSTERESIS_MARGIN = 0.5; // meters
