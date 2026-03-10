@@ -54,6 +54,10 @@ export function useBluetoothScanner(options: BluetoothScannerOptions) {
   const startScanning = useCallback(async () => {
     try {
       setError(null);
+      // Request notification permission early so alerts work for tracked devices
+      if (notificationsEnabled && typeof Notification !== 'undefined' && Notification.permission === 'default') {
+        await Notification.requestPermission().catch(() => {});
+      }
       const res = await fetch(`${API_BASE}/scanner/start`, {
         method: 'POST',
         headers: { 'X-Browser-Id': browserId },
