@@ -5,7 +5,7 @@ export function estimateDistance(
 ): number {
   if (rssi === 0) return -1;
   const ratio = (txPower - rssi) / (10 * pathLossExponent);
-  return Math.pow(10, ratio);
+  return Math.min(Math.pow(10, ratio), 50);
 }
 
 export function classifyProximity(

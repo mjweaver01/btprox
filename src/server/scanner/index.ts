@@ -148,7 +148,7 @@ export function getDiscoveredDevices(browserId: string | null): BtDevice[] {
   const devices: BtDevice[] = [];
 
   for (const raw of rawDevices.values()) {
-    const effectiveTxPower = raw.txPower ?? config.txPowerCalibration;
+    const effectiveTxPower = (raw.txPower != null && raw.txPower < 0) ? raw.txPower : config.txPowerCalibration;
     const distance = estimateDistance(raw.rssi, effectiveTxPower, config.pathLossExponent);
     const proximity = classifyProximity(distance, config.nearThresholdMeters, config.farThresholdMeters);
     const deviceType = identifyDeviceType(raw.serviceUUIDs, raw.manufacturerData, raw.name);
