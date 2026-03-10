@@ -1,4 +1,4 @@
-import { normalizeRssi } from '../lib/rssi';
+import { normalizeRssi } from '@shared/lib/rssi';
 import { MIN_RSSI, MAX_RSSI } from '@shared/constants';
 
 interface SignalStrengthBarProps {

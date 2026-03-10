@@ -1,25 +1,24 @@
 import { Database } from 'bun:sqlite';
-import { mkdir } from 'fs/promises';
 import { join } from 'path';
-import type { BtDevice, DeviceSighting } from '@shared/types';
+import type { DeviceSighting } from '@shared/types';
 import { logger } from '@shared/logger';
 import { PROJECT_ROOT } from '@shared/root';
 
-const DEVICES_DIR = join(PROJECT_ROOT, 'devices');
-const DB_PATH = join(DEVICES_DIR, 'devices.sqlite');
+const DB_PATH = join(PROJECT_ROOT, 'devices.sqlite');
 
 let db: Database | null = null;
 
 function getDb(): Database {
   if (!db) {
-    throw new Error('Device DB not initialized. Call initDeviceDb() at startup.');
+    throw new Error(
+      'Device DB not initialized. Call initDeviceDb() at startup.'
+    );
   }
   return db;
 }
 
 export async function initDeviceDb(): Promise<void> {
   if (db) return;
-  await mkdir(DEVICES_DIR, { recursive: true });
   db = new Database(DB_PATH, { create: true });
 
   db.run(`
@@ -71,7 +70,9 @@ export async function upsertDevice(
 
   if (existing) {
     database
-      .prepare('UPDATE devices SET name = ?, device_type = ?, last_seen = ? WHERE id = ?')
+      .prepare(
+        'UPDATE devices SET name = ?, device_type = ?, last_seen = ? WHERE id = ?'
+      )
       .run(name, deviceType, now, id);
   } else {
     database
@@ -93,7 +94,9 @@ export async function getDevices(trackedOnly = false): Promise<DeviceRow[]> {
 
 export async function getDevice(id: string): Promise<DeviceRow | null> {
   const database = getDb();
-  return database.query('SELECT * FROM devices WHERE id = ?').get(id) as DeviceRow | null;
+  return database
+    .query('SELECT * FROM devices WHERE id = ?')
+    .get(id) as DeviceRow | null;
 }
 
 export async function updateDeviceTracking(
@@ -106,7 +109,10 @@ export async function updateDeviceTracking(
     .run(isTracked ? 1 : 0, id);
 }
 
-export async function updateDeviceName(id: string, name: string): Promise<void> {
+export async function updateDeviceName(
+  id: string,
+  name: string
+): Promise<void> {
   const database = getDb();
   database.prepare('UPDATE devices SET name = ? WHERE id = ?').run(name, id);
 }

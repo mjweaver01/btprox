@@ -12,22 +12,24 @@ export const configApi = {
     const body = (await req.json()) as Partial<AppConfig>;
     const updates: Partial<AppConfig> = {};
     const numKeys = [
-      'thresholdDb',
-      'bufferBelowThresholdSeconds',
-      'preBufferSeconds',
-      'captureIntervalMs',
-      'classificationMinScore',
+      'scanIntervalMs',
+      'nearThresholdMeters',
+      'farThresholdMeters',
+      'txPowerCalibration',
+      'pathLossExponent',
     ] as const satisfies readonly (keyof AppConfig)[];
     for (const key of numKeys) {
       const val = body[key];
       if (typeof val === 'number') updates[key] = val;
     }
-    if (Array.isArray(body.soundTypes)) updates.soundTypes = body.soundTypes;
-    if (body.deviceId !== undefined) updates.deviceId = body.deviceId || undefined;
-    if (Array.isArray(body.notificationSounds))
-      updates.notificationSounds = body.notificationSounds;
+    if (Array.isArray(body.trackedDeviceIds))
+      updates.trackedDeviceIds = body.trackedDeviceIds;
     if (typeof body.notificationsEnabled === 'boolean')
       updates.notificationsEnabled = body.notificationsEnabled;
+    if (typeof body.notifyOnNear === 'boolean')
+      updates.notifyOnNear = body.notifyOnNear;
+    if (typeof body.notifyOnFar === 'boolean')
+      updates.notifyOnFar = body.notifyOnFar;
     const config = await saveConfig(browserId, updates);
     return Response.json(config);
   },

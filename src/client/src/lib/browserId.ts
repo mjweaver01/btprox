@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'decibel-reader:browserId';
+const STORAGE_KEY = 'btprox:browserId';
 
 function generateId(): string {
   return crypto.randomUUID();

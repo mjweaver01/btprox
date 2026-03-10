@@ -6,6 +6,8 @@ import { initDeviceDb } from './devices';
 import { configApi } from './api/config';
 import { devicesApi, devicesIdApi } from './api/devices';
 import { sightingsApi } from './api/sightings';
+import { scannerStatusApi, scannerStartApi, scannerStopApi, scannerDevicesApi } from './api/scanner';
+import { startScanner } from './scanner/index';
 
 const certPath = join(import.meta.dir, '..', '..', 'certs', 'cert.pem');
 const keyPath = join(import.meta.dir, '..', '..', 'certs', 'key.pem');
@@ -27,6 +29,10 @@ const server = Bun.serve({
     '/api/devices': devicesApi,
     '/api/devices/:id': devicesIdApi,
     '/api/sightings': sightingsApi,
+    '/api/scanner/status': scannerStatusApi,
+    '/api/scanner/start': scannerStartApi,
+    '/api/scanner/stop': scannerStopApi,
+    '/api/scanner/devices': scannerDevicesApi,
   },
   async fetch(req) {
     const pathname = new URL(req.url).pathname;
@@ -54,6 +60,7 @@ const server = Bun.serve({
 
 await loadConfig();
 await initDeviceDb();
+await startScanner();
 
 const protocol = useTls ? 'https' : 'http';
 console.log(`
