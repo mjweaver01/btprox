@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { useBluetooth } from '../context/BluetoothContext';
 import { DeviceCard } from '../components/DeviceCard';
+import { ProximityMap } from '../components/ProximityMap';
 
 export function ScannerPage() {
   const { scannerEnabled, setScannerEnabled, devices, isScanning, error, startScanning } =
     useBluetooth();
+  const [view, setView] = useState<'map' | 'grid'>('map');
 
   const sortedDevices = [...devices].sort((a, b) => {
     if (a.isTracked && !b.isTracked) return -1;
@@ -47,12 +50,36 @@ export function ScannerPage() {
                 {devices.length} device{devices.length !== 1 ? 's' : ''} nearby
               </p>
             </div>
-            <button
-              onClick={() => setScannerEnabled(false)}
-              className="rounded-lg border border-zinc-700 bg-zinc-800/50 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800"
-            >
-              Stop Scanning
-            </button>
+            <div className="flex items-center gap-2">
+              <div className="flex rounded-lg border border-zinc-700 overflow-hidden">
+                <button
+                  onClick={() => setView('map')}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                    view === 'map'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-300'
+                  }`}
+                >
+                  Map
+                </button>
+                <button
+                  onClick={() => setView('grid')}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                    view === 'grid'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-300'
+                  }`}
+                >
+                  Grid
+                </button>
+              </div>
+              <button
+                onClick={() => setScannerEnabled(false)}
+                className="rounded-lg border border-zinc-700 bg-zinc-800/50 px-4 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-800"
+              >
+                Stop
+              </button>
+            </div>
           </div>
 
           {devices.length === 0 && isScanning ? (
@@ -63,6 +90,8 @@ export function ScannerPage() {
                 Make sure Bluetooth devices are nearby and advertising
               </p>
             </div>
+          ) : view === 'map' ? (
+            <ProximityMap devices={sortedDevices} />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {sortedDevices.map(device => (
