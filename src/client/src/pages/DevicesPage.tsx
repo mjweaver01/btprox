@@ -1,52 +1,23 @@
-import { useState, useEffect } from 'react';
-import type { DeviceSighting } from '@shared/types';
-import { API_BASE } from '@shared/constants';
 import { useBluetooth } from '../context/BluetoothContext';
-import { useDevicesVersion } from '../lib/devicesVersion';
-import type { DeviceRow } from '../../../server/devices';
-import { SignalStrengthBar } from '../components/SignalStrengthBar';
 
 export function DevicesPage() {
-  const { config } = useBluetooth();
-  const [trackedDevices, setTrackedDevices] = useState<DeviceRow[]>([]);
-  const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
-  const [sightings, setSightings] = useState<DeviceSighting[]>([]);
-  const [loading, setLoading] = useState(false);
-  const version = useDevicesVersion();
+  const { config, handleSaveConfig, devices } = useBluetooth();
 
-  useEffect(() => {
-    fetch(`${API_BASE}/devices?tracked=true`)
-      .then(r => r.json())
-      .then(setTrackedDevices)
-      .catch(() => {});
-  }, [version, config.trackedDeviceIds]);
+  const trackedIds = config.trackedDeviceIds;
 
-  useEffect(() => {
-    if (!selectedDevice) {
-      setSightings([]);
-      return;
-    }
+  // Show currently visible tracked devices with live data
+  const trackedDevices = devices.filter(d => trackedIds.includes(d.id));
 
-    setLoading(true);
-    fetch(`${API_BASE}/sightings?deviceId=${selectedDevice}&limit=50`)
-      .then(r => r.json())
-      .then(setSightings)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [selectedDevice]);
+  // IDs that are tracked but not currently visible
+  const offlineIds = trackedIds.filter(id => !devices.find(d => d.id === id));
 
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+  const removeTracking = async (deviceId: string) => {
+    await handleSaveConfig({
+      trackedDeviceIds: trackedIds.filter(id => id !== deviceId),
     });
   };
 
-  if (trackedDevices.length === 0) {
+  if (trackedIds.length === 0) {
     return (
       <div className="space-y-6">
         <div className="text-center">
@@ -69,77 +40,63 @@ export function DevicesPage() {
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {trackedDevices.map(device => (
-            <button
+            <div
               key={device.id}
-              onClick={() =>
-                setSelectedDevice(selectedDevice === device.id ? null : device.id)
-              }
-              className={`rounded-lg border p-4 text-left transition-all ${
-                selectedDevice === device.id
-                  ? 'border-blue-500 bg-blue-500/10'
-                  : 'border-zinc-700 bg-zinc-900/50 hover:border-zinc-600'
-              }`}
+              className="rounded-lg border border-blue-500/30 bg-zinc-900/50 p-4"
             >
-              <h3 className="mb-1 font-medium text-zinc-100 truncate">
-                {device.name || 'Unknown Device'}
-              </h3>
-              <p className="mb-2 text-sm text-zinc-500">{device.device_type}</p>
-              <p className="text-xs text-zinc-600">
-                Last seen: {formatTimestamp(device.last_seen)}
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="min-w-0">
+                  <h3 className="font-medium text-zinc-100 truncate">
+                    {device.name || 'Unknown Device'}
+                  </h3>
+                  <p className="text-sm text-zinc-500">{device.deviceType}</p>
+                </div>
+                <span
+                  className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium ${
+                    device.proximity === 'near'
+                      ? 'bg-blue-500/20 text-blue-400'
+                      : device.proximity === 'far'
+                        ? 'bg-red-500/20 text-red-400'
+                        : 'bg-zinc-500/20 text-zinc-400'
+                  }`}
+                >
+                  {device.proximity}
+                </span>
+              </div>
+              <p className="text-sm text-zinc-400 mb-2">
+                ~{device.estimatedDistance.toFixed(1)}m away
               </p>
-              <p className="mt-1 text-xs text-zinc-600 font-mono truncate">
-                {device.id}
-              </p>
-            </button>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-zinc-600 font-mono truncate">
+                  {device.id}
+                </p>
+                <button
+                  onClick={() => removeTracking(device.id)}
+                  className="text-xs text-zinc-500 hover:text-red-400 transition-colors"
+                >
+                  Untrack
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {offlineIds.map(id => (
+            <div
+              key={id}
+              className="rounded-lg border border-zinc-700/50 bg-zinc-900/30 p-4 opacity-60"
+            >
+              <h3 className="font-medium text-zinc-400 mb-1">Not in range</h3>
+              <p className="text-xs text-zinc-600 font-mono truncate mb-2">{id}</p>
+              <button
+                onClick={() => removeTracking(id)}
+                className="text-xs text-zinc-500 hover:text-red-400 transition-colors"
+              >
+                Untrack
+              </button>
+            </div>
           ))}
         </div>
       </div>
-
-      {selectedDevice && (
-        <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-6">
-          <h3 className="mb-4 text-lg font-semibold text-zinc-100">
-            Sighting History
-          </h3>
-
-          {loading ? (
-            <div className="py-8 text-center text-zinc-500">Loading...</div>
-          ) : sightings.length === 0 ? (
-            <div className="py-8 text-center text-zinc-500">
-              No sightings recorded yet
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {sightings.map(sighting => (
-                <div
-                  key={sighting.id}
-                  className="rounded-lg border border-zinc-800 bg-zinc-950/50 p-4"
-                >
-                  <div className="mb-3 flex items-center justify-between">
-                    <span className="text-sm text-zinc-400">
-                      {formatTimestamp(sighting.timestamp)}
-                    </span>
-                    <span
-                      className={`rounded px-2 py-0.5 text-xs font-medium ${
-                        sighting.proximity === 'near'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : sighting.proximity === 'far'
-                            ? 'bg-red-500/20 text-red-400'
-                            : 'bg-zinc-500/20 text-zinc-400'
-                      }`}
-                    >
-                      {sighting.proximity}
-                    </span>
-                  </div>
-                  <SignalStrengthBar rssi={sighting.rssi} className="mb-2" />
-                  <div className="text-sm text-zinc-500">
-                    Distance: ~{sighting.estimatedDistance.toFixed(1)}m
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

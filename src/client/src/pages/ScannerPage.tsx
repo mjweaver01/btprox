@@ -28,7 +28,7 @@ export function ScannerPage() {
             Start Scanning
           </button>
           <p className="mt-4 text-sm text-zinc-500">
-            Uses server-side Bluetooth to detect nearby devices
+            Scans for BLE devices using this device's Bluetooth
           </p>
         </div>
       )}

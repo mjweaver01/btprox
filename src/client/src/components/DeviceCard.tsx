@@ -1,8 +1,6 @@
 import type { BtDevice } from '@shared/types';
 import { SignalStrengthBar } from './SignalStrengthBar';
 import { useBluetooth } from '../context/BluetoothContext';
-import { API_BASE } from '@shared/constants';
-import { getBrowserId } from '../lib/browserId';
 
 interface DeviceCardProps {
   device: BtDevice;
@@ -12,20 +10,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
   const { config, handleSaveConfig } = useBluetooth();
 
   const toggleTracking = async () => {
-    const newTracked = !device.isTracked;
-
-    await fetch(`${API_BASE}/devices/${device.id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Browser-Id': getBrowserId(),
-      },
-      body: JSON.stringify({ isTracked: newTracked }),
-    }).catch(() => {});
-
-    const newTrackedIds = newTracked
-      ? [...config.trackedDeviceIds, device.id]
-      : config.trackedDeviceIds.filter(id => id !== device.id);
+    const newTrackedIds = device.isTracked
+      ? config.trackedDeviceIds.filter(id => id !== device.id)
+      : [...config.trackedDeviceIds, device.id];
 
     await handleSaveConfig({ trackedDeviceIds: newTrackedIds });
   };

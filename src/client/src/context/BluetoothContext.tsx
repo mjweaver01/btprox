@@ -7,8 +7,8 @@ import {
   type ReactNode,
 } from 'react';
 import type { AppConfig, BtDevice } from '@shared/types';
-import { API_BASE, DEFAULT_CONFIG } from '@shared/constants';
-import { getBrowserId } from '../lib/browserId';
+import { DEFAULT_CONFIG } from '@shared/constants';
+import { loadLocalConfig, saveLocalConfig } from '../lib/localConfig';
 import { useBluetoothScanner } from '../hooks/useBluetoothScanner';
 
 interface BluetoothStatus {
@@ -30,7 +30,6 @@ interface BluetoothContextValue {
   devices: BtDevice[];
   isScanning: boolean;
   error: string | null;
-  supported: boolean;
   config: AppConfig;
   setConfig: (c: AppConfig) => void;
   handleSaveConfig: (updates: Partial<AppConfig>) => Promise<void>;
@@ -46,13 +45,14 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
     ...DEFAULT_CONFIG,
   }));
 
-  const { devices, isScanning, error, supported, startScanning } = useBluetoothScanner({
+  const { devices, isScanning, error, startScanning } = useBluetoothScanner({
     enabled: scannerEnabled,
     scanIntervalMs: config.scanIntervalMs,
     trackedDeviceIds: config.trackedDeviceIds,
     notificationsEnabled: config.notificationsEnabled,
     notifyOnNear: config.notifyOnNear,
     notifyOnFar: config.notifyOnFar,
+    config,
   });
 
   useEffect(() => {
@@ -63,30 +63,18 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
     });
   }, [scannerEnabled, isScanning, error]);
 
+  // Load config from local storage on mount
   useEffect(() => {
-    const browserId = getBrowserId();
-    fetch(`${API_BASE}/config`, {
-      headers: { 'X-Browser-Id': browserId },
-    })
-      .then(r => r.json())
-      .then(setConfig)
-      .catch(() => {});
+    loadLocalConfig().then(setConfig).catch(() => {});
   }, []);
 
   const handleSaveConfig = useCallback(
     async (updates: Partial<AppConfig>) => {
-      const res = await fetch(`${API_BASE}/config`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Browser-Id': getBrowserId(),
-        },
-        body: JSON.stringify(updates),
-      });
-      const data = await res.json();
-      setConfig(data);
+      const merged = { ...config, ...updates };
+      await saveLocalConfig(merged);
+      setConfig(merged);
     },
-    []
+    [config]
   );
 
   const value: BluetoothContextValue = {
@@ -96,7 +84,6 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
     devices,
     isScanning,
     error,
-    supported,
     config,
     setConfig,
     handleSaveConfig,
